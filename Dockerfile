@@ -1,1 +1,1 @@
-FROM digitalmarketplace/base-frontend:8.0.0
+FROM digitalmarketplace/base-frontend:ris-node-bump-move-to-fe
