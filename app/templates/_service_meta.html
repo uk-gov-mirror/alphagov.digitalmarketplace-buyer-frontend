@@ -18,6 +18,69 @@
   {% endfor %}
   </ul>
   <h2 class="visuallyhidden">Service documents</h2>
+
+  <!-- Text only -->
+  <!-- Can abbreviation come from document data? -->
+  <!-- Can we include file size from document data? -->
+  <!-- Can we get MIMEtype from document data? (less important) -->
+  <!-- Inlining styles that will need to be applied in CSS -->
+  <h2>Text only, file information after title</h2>
+  <ul class="govuk-list govuk-!-margin-bottom-6">
+    {% for document in service.meta.documents %}
+    <li class="govuk-!-margin-bottom-4">
+      <a href="{{ document.url }}" class="govuk-link" style="font-size: 16px;" target="_self">
+        {{ document.name }} (<abbr title="Adobe Portable Document Format">{{ document.extension }}</abbr>)
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <!-- Text with file info separated -->
+  <h2>Text only, file information in new paragraph</h2>
+  <ul class="govuk-list govuk-!-margin-bottom-6">
+    {% for document in service.meta.documents %}
+    <li class="govuk-!-margin-bottom-4">
+      <a href="{{ document.url }}" class="govuk-link" style="font-size: 16px;" target="_self">
+        {{ document.name }}
+      </a>
+      <p>
+        <abbr title="Adobe Portable Document Format">[{{ document.extension }}]</abbr>
+      </p>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <!-- Text with file info at beginning -->
+  <h2>Text only, file information at beginning</h2>
+  <ul class="govuk-list govuk-!-margin-bottom-6">
+    {% for document in service.meta.documents %}
+    <li class="govuk-!-margin-bottom-4">
+      <abbr title="Adobe Portable Document Format">[{{ document.extension }}]</abbr>
+      <a href="{{ document.url }}" class="govuk-link" style="font-size: 16px;" target="_self">
+        {{ document.name }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <!-- SVG -->
+  <h2>SVG with file information</h2>
+  <ul class="govuk-list govuk-!-margin-bottom-6">
+    {% for document in service.meta.documents %}
+    <li class="govuk-!-margin-bottom-4">
+      <a href="{{ document.url }}" class="govuk-link govuk-!-margin-right-3 govuk-!-display-inline-block" target="_self" tabindex="-1" aria-hidden="true">
+        <svg style="vertical-align: middle" viewBox="0 0 45 30" width="45" height="30" version="1.1" aria-hidden="true">
+          <path d="m0.58749 0.37786-0.20803 29.125h44.415v-19.971l-9.1535-9.0495z" fill="none" stroke="#6f777b" stroke-width=".7535px"/>
+          <path d="m34.601 0.5859 0.10402 9.7776 9.7776 0.20803" fill="none" stroke="#6f777b" stroke-width=".7535px"/>
+        </svg>
+      </a>
+      <a href="{{ document.url }}" class="govuk-link" style="font-size: 16px;" target="_self">
+        {{ document.name }} (<abbr title="Adobe Portable Document Format">{{ document.extension }}</abbr>)
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+
   <ul class="document-list">
   {% for document in service.meta.documents %}
     <li class="document-list-item">
