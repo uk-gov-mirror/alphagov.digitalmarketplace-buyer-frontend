@@ -27,10 +27,11 @@
   <h2>Text only, file information after title</h2>
   <ul class="govuk-list govuk-!-margin-bottom-6">
     {% for document in service.meta.documents %}
-    <li class="govuk-!-margin-bottom-4">
-      <a href="{{ document.url }}" class="govuk-link" style="font-size: 16px;" target="_self">
-        {{ document.name }} (<abbr title="Adobe Portable Document Format">{{ document.extension }}</abbr>)
+    <li class="govuk-!-margin-bottom-4" style="font-size: 16px;">
+      <a href="{{ document.url }}" class="govuk-link" target="_self">
+        {{ document.name }}
       </a>
+      (<abbr title="Adobe Portable Document Format">{{ document.extension }}</abbr>)
     </li>
     {% endfor %}
   </ul>
