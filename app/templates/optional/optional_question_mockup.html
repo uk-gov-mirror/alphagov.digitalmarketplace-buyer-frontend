@@ -1,0 +1,38 @@
+
+{% extends "_base_page.html" %}
+
+{% block pageTitle %}
+  Optional Questions Mockup - Digital Marketplace
+{% endblock %}
+
+{% block breadcrumb %}
+{{ govukBreadcrumbs({
+  "items": [
+    {
+      "href": url_for('main.index'),
+      "text": "Digital Marketplace"
+    },
+    {
+      "href": "/optional",
+      "text": "Optional Questions mockup"
+    },
+  ]
+}) }}
+{% endblock breadcrumb %}
+
+{% block mainContent %}
+<ul class="govuk-list">
+  <li>
+    <a class="govuk-link" href="/optional/fields">Page with multiple fields</a>
+  </li>
+  <li>
+    <a class="govuk-link" href="/optional/page-1">One question per page pattern</a>
+  </li>
+  <li>
+    <a class="govuk-link" href="/optional/check-answers">Check answers pattern</a>
+  </li>
+  <li>
+    <a class="govuk-link" href="/optional/task-list">Task list pattern</a>
+  </li>
+</ul>
+{% endblock %}

@@ -42,6 +42,32 @@ from ..presenters.search_presenters import filters_for_lot, set_filter_states, b
 from ..presenters.search_results import SearchResults
 from ..presenters.search_summary import SearchSummary
 
+# OPTIONAL QUESTIONS MOCKUP
+@main.route('/optional')
+def optionalQuestions():
+    return render_template('optional/optional_question_mockup.html')
+
+@main.route('/optional/fields')
+def optionalMultipleFields():
+    return render_template('optional/optional_fields.html')
+
+@main.route('/optional/page-1')
+def optionalMultipleFields():
+    return render_template('optional/optional_page_1.html')
+
+@main.route('/optional/page-2')
+def optionalMultipleFields():
+    return render_template('optional/optional_page_2.html')
+
+@main.route('/optional/check-answers')
+def optionalMultipleFields():
+    return render_template('optional/optional_check_answers.html')
+
+@main.route('/optional/task-list')
+def optionalMultipleFields():
+    return render_template('optional/optional_task_list.html')
+
+# END MOCKUP
 
 @main.route('/')
 def index():

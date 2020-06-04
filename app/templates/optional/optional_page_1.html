@@ -1,0 +1,29 @@
+
+{% extends "_base_page.html" %}
+
+{% block pageTitle %}
+  Optional Questions Mockup - Digital Marketplace
+{% endblock %}
+
+{% block breadcrumb %}
+{{ govukBreadcrumbs({
+  "items": [
+    {
+      "href": url_for('main.index'),
+      "text": "Digital Marketplace"
+    },
+    {
+      "href": "/optional",
+      "text": "Optional Questions mockup"
+    },
+    {
+      "href": "/optional/page-1",
+      "text": "One per page, page 1"
+    }
+  ]
+}) }}
+{% endblock breadcrumb %}
+
+{% block mainContent %}
+<p>Page 1</p>
+{% endblock %}
