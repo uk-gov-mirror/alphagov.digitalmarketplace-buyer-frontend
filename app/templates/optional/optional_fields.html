@@ -25,5 +25,85 @@
 {% endblock breadcrumb %}
 
 {% block mainContent %}
-<p>Fields</p>
+    {% from "govuk-frontend/components/input/macro.njk" import govukInput %}
+    {% from "govuk-frontend/components/fieldset/macro.njk" import govukFieldset %}
+
+    <form>
+        {% call govukFieldset({
+            "legend": {
+                "text": "What is your address?",
+                "classes": "govuk-fieldset__legend--l",
+                "isPageHeading": true
+            }
+            }) %}
+
+            {{ govukInput({
+                "label": {
+                "html": 'Building and street <span class="govuk-visually-hidden">line 1 of 2</span>'
+                },
+                "id": "address-line-1",
+                "name": "address-line-1",
+                "attributes": {"required": "true"}
+            }) }}
+
+            {{ govukInput({
+                "label": {
+                "html": '<span class="govuk-visually-hidden">Building and street line 2 of 2</span>'
+                },
+                "id": "address-line-2",
+                "name": "address-line-2"
+            }) }}
+
+            {{ govukInput({
+                "label": {
+                "text": "Town or city"
+                },
+                "classes": "govuk-!-width-two-thirds",
+                "id": "address-town",
+                "name": "address-town",
+                "hint": {
+                    "text": "Enter a town or city in the UK",
+                    "id": "toc-hint"
+                },
+                "attributes": {"required": "true"}
+            }) }}
+
+            {{ govukInput({
+                "label": {
+                "text": "County (optional)"
+                },
+                "classes": "govuk-!-width-two-thirds",
+                "id": "address-county",
+                "name": "address-county",
+                "hint": {
+                    "text": "Enter a county, like Berkshire",
+                    "id": "c-hint"
+                }
+            }) }}
+
+            {{ govukInput({
+                "label": {
+                "text": "Postcode"
+                },
+                "classes": "govuk-input--width-10",
+                "id": "address-postcode",
+                "name": "address-postcode",
+                "attributes": {"required": "true"}
+            }) }}
+
+            {{ govukInput({
+                "label": {
+                "text": "Telephone (optional)"
+                },
+                "classes": "govuk-input--width-10",
+                "id": "address-telephone",
+                "name": "address-telephone"
+            }) }}
+            
+            {{ govukButton({
+                "text": "Submit"
+                }) }}
+
+        {% endcall %}
+    </form>
 {% endblock %}
