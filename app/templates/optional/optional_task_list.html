@@ -143,6 +143,21 @@
     margin-bottom: 0;
   }
 }
+
+.app-task-list__task-incomplete {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  background-color: #f3f2f1;
+  color: #0b0c0c;
+}
+
+@media (min-width: 28.125em) {
+  .app-task-list__task-incomplete {
+    float: right;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
 </style>
 {% endblock %}
 
@@ -237,11 +252,11 @@
             </li>
             <li class="app-task-list__item">
               <span class="app-task-list__task-name">
-                <a href="#" aria-describedby="medical-information-completed">
+                <a href="#" aria-describedby="medical-information-incomplete">
                   Give medical information
                 </a>
               </span>
-              <strong class="govuk-tag app-task-list__task-completed" id="medical-information-completed">Completed</strong>
+              <strong class="govuk-tag app-task-list__task-incomplete" id="medical-information-incomplete">Incomplete</strong>
             </li>
           </ul>
         </li>
