@@ -52,19 +52,19 @@ def optionalMultipleFields():
     return render_template('optional/optional_fields.html')
 
 @main.route('/optional/page-1')
-def optionalMultipleFields():
+def optionalPageOne():
     return render_template('optional/optional_page_1.html')
 
 @main.route('/optional/page-2')
-def optionalMultipleFields():
+def optionalPageTwo():
     return render_template('optional/optional_page_2.html')
 
 @main.route('/optional/check-answers')
-def optionalMultipleFields():
+def optionalCheckAnswers():
     return render_template('optional/optional_check_answers.html')
 
 @main.route('/optional/task-list')
-def optionalMultipleFields():
+def optionalTaskList():
     return render_template('optional/optional_task_list.html')
 
 # END MOCKUP
