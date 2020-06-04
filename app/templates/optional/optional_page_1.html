@@ -1,5 +1,7 @@
 
 {% extends "_base_page.html" %}
+{% from "govuk-frontend/components/radios/macro.njk" import govukRadios %}
+{% from "govuk-frontend/components/button/macro.njk" import govukButton %}
 
 {% block pageTitle %}
   Optional Questions Mockup - Digital Marketplace
@@ -25,5 +27,44 @@
 {% endblock breadcrumb %}
 
 {% block mainContent %}
-<p>Page 1</p>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form>
+        {{ govukRadios({
+          "idPrefix": "where-do-you-live",
+          "name": "where-do-you-live",
+          "fieldset": {
+            "legend": {
+              "text": "Where do you live?",
+              "isPageHeading": true,
+              "classes": "govuk-fieldset__legend--l"
+            }
+          },
+          "items": [
+            {
+              "value": "england",
+              "text": "England"
+            },
+            {
+              "value": "scotland",
+              "text": "Scotland"
+            },
+            {
+              "value": "wales",
+              "text": "Wales"
+            },
+            {
+              "value": "northern-ireland",
+              "text": "Northern Ireland"
+            }
+          ]
+        }) }}
+
+        {{ govukButton({
+          "text": "Continue",
+          "href": "/optional/page-2"
+        }) }}
+      </form>
+    </div>
+  </div>
 {% endblock %}
