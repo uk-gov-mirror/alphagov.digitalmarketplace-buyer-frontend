@@ -134,6 +134,7 @@
 .app-task-list__task-completed {
   margin-top: 10px;
   margin-bottom: 5px;
+  background-color: #00703c;
 }
 
 @media (min-width: 28.125em) {
@@ -157,6 +158,10 @@
     margin-top: 0;
     margin-bottom: 0;
   }
+}
+
+.app-task-list .govuk-tag {
+  text-transform: none;
 }
 </style>
 {% endblock %}
@@ -226,7 +231,7 @@
                   Company information
                 </a>
               </span>
-              <strong class="govuk-tag app-task-list__task-completed" id="company-information-completed">Completed</strong>
+              <strong class="govuk-tag app-task-list__task-incomplete" id="company-information-completed">To do</strong>
             </li>
             <li class="app-task-list__item">
               <span class="app-task-list__task-name">
@@ -234,14 +239,15 @@
                   Your contact details
                 </a>
               </span>
-              <strong class="govuk-tag app-task-list__task-completed" id="contact-details-completed">Completed</strong>
+              <strong class="govuk-tag app-task-list__task-incomplete" id="contact-details-incomplete">To do</strong>
             </li>
             <li class="app-task-list__item">
               <span class="app-task-list__task-name">
-                <a href="#">
+                <a href="#" aria-describedby="contact-details-completed">
                   List convictions (optional)
                 </a>
               </span>
+              <strong class="govuk-tag app-task-list__task-incomplete" id="convictions-incomplete">Optional</strong>
             </li>
             <li class="app-task-list__item">
               <span class="app-task-list__task-name">
