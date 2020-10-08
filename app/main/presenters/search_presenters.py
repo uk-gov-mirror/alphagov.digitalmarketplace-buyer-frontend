@@ -176,6 +176,62 @@ def _update_base_url_args_for_lot_and_category(url_args, keys_to_remove, lot_slu
     return url_args
 
 
+def build_lots_and_categories_selects(
+    framework, lots, category_filter_group, request, cleaned_request_args,
+    content_manifest, doc_type, index, search_link_builder, search_api_client
+):
+    """
+    """
+    current_lot_slug = get_valid_lot_from_args_or_none(cleaned_request_args, [lot['slug'] for lot in lots])
+
+    # Links in the tree should preserve all the filters, except those relating to this tree (i.e. lot
+    # and category).
+    keys_to_remove = _get_category_filter_key_set(category_filter_group)
+    keys_to_remove.add('page')
+    keys_to_remove.add('parentCategory')
+    preserved_request_args = MultiDict(
+        (k, v) for (k, v) in request.args.items(multi=True) if k not in keys_to_remove
+    )
+
+    selected_filters = list()
+    selected_filters.append(
+        {
+            'text': '',
+            'value': '', 
+            'attributes': {
+                'data-link': search_link_builder(_build_base_url_args(preserved_request_args, content_manifest, framework, None))
+            }
+        }
+    )
+
+    aggregations_by_lot = {
+        lot['slug']: _get_aggregations_for_lot_with_filters(
+            lot['slug'], content_manifest, framework, cleaned_request_args, doc_type, index, search_api_client
+        ) for lot in lots
+    }
+
+    for lot in lots:
+        lot_filter = {
+            'text': lot['name'] + " (" + str(aggregations_by_lot[lot['slug']].results['lot'].get(lot['slug'], 0)) + ")",
+            'value': lot['slug']
+        }
+        lot_selected = lot['slug'] == current_lot_slug
+        if lot_selected:
+            lot_filter['selected'] = True
+
+        url_args_for_lot = _build_base_url_args(preserved_request_args, content_manifest, framework, lot['slug'])
+        url_args_for_lot = _update_base_url_args_for_lot_and_category(url_args_for_lot,
+                                                                        keys_to_remove,
+                                                                        lot_slug=lot['slug'])
+        lot_filter['attributes'] = {
+            'data-link': search_link_builder(url_args_for_lot)
+        }
+
+        selected_filters.append(lot_filter)
+
+    return selected_filters
+
+
 def build_lots_and_categories_link_tree(
     framework, lots, category_filter_group, request, cleaned_request_args,
     content_manifest, doc_type, index, search_link_builder, search_api_client

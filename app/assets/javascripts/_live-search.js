@@ -38,6 +38,9 @@ endpoint response (application/json):
 (function ($) {
     "use strict";
   
+    GOVUKFrontend = GOVUKFrontend || {};
+    DMGOVUKFrontend = DMGOVUKFrontend || {};
+  
     var LiveSearch = function($wrapper){
       // Attach filter-on-click functionality if this page has a live-search form.
       this.$wrapper = $wrapper;
@@ -46,29 +49,30 @@ endpoint response (application/json):
       this.$searchSubmitButton = this.$form.find('.dm-search-box__submit');
       this.$searchInput = this.$form.find('.dm-search-box__input');
       this.$saveSearchButton = this.$form.find('button#save-search')
+      this.$taxonomySelect = this.$form.find('.dm-taxonomy-select select')
   
       this.state = false;
       this.previousState = false;
       this.resultsCache = {};
   
-      if(GOVUK.GDM.support.history()) {
+      if(window.history && window.history.pushState && window.history.replaceState) {
         this.originalState = this.$form.serializeArray();
         this.saveState();
-        this.$form.on('change', 'input[type=checkbox], input[type=search], input[type=radio]', this.formChange.bind(this));
+        this.$form.on('change', 'select, input[type=checkbox], input[type=search], input[type=radio]', this.formChange.bind(this));
         $(window).on('popstate', this.popState.bind(this));
   
         this.$searchSubmitButton.on('click',
           function(e){
-            this.formChange();
             e.preventDefault();
+            this.formChange();
           }.bind(this)
         );
         this.$searchInput.keypress(
           function(e){
             if(e.keyCode == 13) {
               // 13 is the return key
-              this.formChange();
               e.preventDefault();
+              this.formChange();
             }
           }.bind(this)
         );
@@ -95,7 +99,7 @@ endpoint response (application/json):
       }
   
       this.restoreBooleans();
-      this.restoreSearchInputs();
+      this.restoreTextInputs();
       this.updateResults();
     };
   
@@ -172,22 +176,40 @@ endpoint response (application/json):
       // The !(state === "") is required for browser versions which trigger the popstate event on first pageload
       if(state == $.param(this.state) && !(state === "")) {
         for (var blockToReplace in response) {
-          this.replaceBlock(response[blockToReplace]['selector'], response[blockToReplace]['html']);
+          if (blockToReplace === 'categories') {
+            this.updateCategories(response[blockToReplace]['select'])
+          } else {
+            this.replaceBlock(response[blockToReplace]['selector'], response[blockToReplace]['html']);
+          }
         }
   
         $('div[class=js-dm-live-search-fade]').css('opacity', '1')
+      }
+    }
+
+    LiveSearch.prototype.updateCategories = function updateCategories (categories) {
+      for (var i = 0; i < categories.length; i++) {
+        this.$taxonomySelect.find('option[value="' + categories[i].value + '"]').text(categories[i].text)
       }
     }
   
     LiveSearch.prototype.replaceBlock = function replaceBlock(selector, html) {
       $(selector)[0].outerHTML = html;
     }
-  
+    
     LiveSearch.prototype.restoreBooleans = function restoreBooleans(){
       var that = this;
       this.$form.find('input[type=checkbox], input[type=radio]').each(function(i, el){
         var $el = $(el);
         $el.prop('checked', that.isBooleanSelected($el.attr('name'), $el.attr('value')));
+      });
+    };
+  
+    LiveSearch.prototype.restoreBooleans = function restoreBooleans(){
+      var that = this;
+      this.$form.find('select').each(function(i, el){
+        var $el = $(el);
+        $el.val(that.getTextInputValue($el.attr('name')))
       });
     };
   
@@ -201,11 +223,11 @@ endpoint response (application/json):
       return false;
     };
   
-    LiveSearch.prototype.restoreSearchInputs = function restoreSearchInputs(){
+    LiveSearch.prototype.restoreTextInputs = function restoreSearchInputs(){
       var that = this;
       this.$form.find('input[type=search]').each(function(i, el){
         var $el = $(el);
-        $el.val(that.getTextInputValue($el.attr('name')));
+        $el.val(that.getTextInputValue($el.attr('name'), that.state));
       });
     };
   
@@ -218,11 +240,9 @@ endpoint response (application/json):
       }
       return '';
     };
-  
-    GOVUK = GOVUK || {};
-    GOVUK.GDM = GOVUK.GDM || {};
-    GOVUK.GDM.LiveSearch = LiveSearch;
+
+    DMGOVUKFrontend.LiveSearch = LiveSearch;
   
     // Instantiate an option select for each one found on the page
-    var form = new GOVUK.GDM.LiveSearch($('#js-dm-live-search-wrapper'));
+    var form = new DMGOVUKFrontend.LiveSearch($('#js-dm-live-search-wrapper'));
   })(jQuery);

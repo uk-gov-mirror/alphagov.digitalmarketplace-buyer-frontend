@@ -1,7 +1,72 @@
+{%- macro top_level_link(text, count, url) -%}
+  <a href="{{ url }}" class="lot-filters__top-level-link">{{ text }}</a>
+{%- endmacro -%}
+
+{%- macro list_item__unselected(text, count, url) -%}
+  <li>{% if count > 0 %}<a class="govuk-link" href="{{ url }}">{% endif %}{{ text }} ({{ count }}){% if count > 0 %}</a>{% endif %}</li>
+{%- endmacro -%}
+
+{%- macro list_item__selected(text, count, url=None, nested_items=None) -%}
+  {% set has_children_selected = nested_items and ((nested_items|selectattr("selected")|list|length) > 0) %}
+  {% if has_children_selected %}
+    <li>{{ top_level_link(text, count=count, url=url) }}
+  {% else %}
+    <li aria-current="page"><strong>{{ text }}{% if not nested_items %} ({{ count }}){% endif %}</strong>
+  {% endif %}
+
+  {% if nested_items %}
+    {{ category_list(nested_items) }}
+  {% endif %}
+  </li>
+{%- endmacro -%}
+
+{%- macro category_list(items, keys=None) -%}
+  {% set
+      _keys = {
+        'text': 'text',
+        'url': 'link',
+        'selected': 'selected',
+        'nested_items': 'children'
+      }
+  %}
+  {% set _ = _keys.update(keys or {}) %}
+
+  {# we are trying to make sure this is the deepest list in the hierarchy #}
+  {# check that none of these items contain nested items that are "selected" #}
+  {% set last_list = items|selectattr(_keys['nested_items'])|list|selectattr(_keys['selected'])|list|length == 0 %}
+
+  <ul {% if last_list %}class="lot-filters--last-list"{% endif %}>
+    {% for item in items %}
+      {% if item.get(_keys['selected']) %}
+         {{ list_item__selected(text=item.label, count=item.service_count, url=item.get(_keys['url']), nested_items=item.get(_keys['nested_items'])) }}
+      {% elif item.get(_keys['url']) %}
+        {{ list_item__unselected(text=item.label, count=item.service_count, url=item.get(_keys['url'])) }}
+      {% endif %}
+    {% endfor %}
+  </ul>
+{%- endmacro -%}
+
+{% from "digitalmarketplace/components/taxonomy-select/macro.njk" import dmTaxonomySelect %}
 <div id="js-dm-live-search-categories" class="js-dm-live-search-fade">
   <div class="lot-filters">
     <h2>Choose a category</h2>
     {% from 'search/_categories.html' import top_level_link, category_list %}
-    {{ category_list([category_tree_root]) }}
+    {{ dmTaxonomySelect({
+      "name": "categories",
+      "title": "All categories",
+      "taxonomy_container_id": "categories",
+      "level_1_items": {
+        "id": "lot",
+        "name": "lot",
+        "label": "Category",
+        "items": category_select
+      }
+    })}}
+    {% if services %}
+      {{ category_list([category_tree_root]) }}
+      {% for f in filter_form_hidden_fields %}
+        <input type="hidden" name="{{ f.name }}" value="{{ f.value }}" />
+      {% endfor %}
+    {% endif %}
   </div>
 </div>

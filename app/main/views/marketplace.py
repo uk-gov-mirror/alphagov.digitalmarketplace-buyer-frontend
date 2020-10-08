@@ -38,7 +38,12 @@ from ..helpers.search_helpers import (
 )
 from ..helpers.shared_helpers import get_one_framework_by_status_in_order_of_preference
 from ...main import main
-from ..presenters.search_presenters import filters_for_lot, set_filter_states, build_lots_and_categories_link_tree
+from ..presenters.search_presenters import (
+    build_lots_and_categories_selects,
+    filters_for_lot,
+    set_filter_states,
+    build_lots_and_categories_link_tree
+)
 from ..presenters.search_results import SearchResults
 from ..presenters.search_summary import SearchSummary
 
@@ -300,6 +305,19 @@ def list_opportunities(framework_family):
         search_api_client
     )
 
+    category_select = build_lots_and_categories_selects(
+        framework,
+        lots,
+        category_filter_group,
+        request,
+        updated_request_args if updated_request_args else clean_request_query_params,
+        content_manifest,
+        doc_type,
+        index,
+        Href(url_for('.{}'.format(view_name), framework_family=framework['framework'])),
+        search_api_client
+    )
+
     filter_form_hidden_fields_by_name = {
         f["name"]: f for f in selected_category_tree_filters[1:]
     }
@@ -322,6 +340,7 @@ def list_opportunities(framework_family):
     template_args = dict(
         briefs=search_results_obj.search_results,
         category_tree_root=selected_category_tree_filters[0],
+        category_select=category_select,
         clear_filters_url=clear_filters_url,
         current_lot=current_lot,
         doc_type=doc_type,
@@ -354,10 +373,6 @@ def list_opportunities(framework_family):
                 "selector": "#js-dm-live-search-results",
                 "html": render_template("search/_results_wrapper.html", **template_args)
             },
-            "categories": {
-                "selector": "#js-dm-live-search-categories",
-                "html": render_template("search/_categories_wrapper.html", **template_args)
-            },
             "summary": {
                 "selector": "#js-dm-live-search-summary",
                 "html": render_template("search/_summary.html", **template_args)
@@ -370,6 +385,9 @@ def list_opportunities(framework_family):
                 "selector": "#js-dm-live-filter-title",
                 "html": render_template("search/_filter_title.html", **template_args)
             },
+            "categories": {
+                "select": category_select
+            }
         }
 
         return jsonify(live_results_dict)
