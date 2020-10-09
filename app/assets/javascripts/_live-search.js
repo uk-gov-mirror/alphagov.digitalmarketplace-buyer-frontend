@@ -50,6 +50,7 @@ endpoint response (application/json):
       this.$searchInput = this.$form.find('.dm-search-box__input');
       this.$saveSearchButton = this.$form.find('button#save-search')
       this.$taxonomySelect = this.$form.find('.dm-taxonomy-select select')
+      this.$filterBlock = this.$form.find('.js-dm-live-search-filters')
   
       this.state = false;
       this.previousState = false;
@@ -164,7 +165,7 @@ endpoint response (application/json):
     };
   
     LiveSearch.prototype.showLoadingIndicators = function showLoadingIndicators() {
-      $('div[class=js-dm-live-search-fade]').css('opacity', '0.25')
+      $('div.js-dm-live-search-fade').css('opacity', '0.25')
       $('#js-dm-live-search-info').text('Loading...');
     }
   
@@ -178,6 +179,8 @@ endpoint response (application/json):
         for (var blockToReplace in response) {
           if (blockToReplace === 'categories') {
             this.updateCategories(response[blockToReplace]['select'])
+          } else if (blockToReplace === 'filters') {
+            this.updateFilters(response[blockToReplace]['selector'], response[blockToReplace]['html'])
           } else {
             this.replaceBlock(response[blockToReplace]['selector'], response[blockToReplace]['html']);
           }
@@ -190,6 +193,14 @@ endpoint response (application/json):
     LiveSearch.prototype.updateCategories = function updateCategories (categories) {
       for (var i = 0; i < categories.length; i++) {
         this.$taxonomySelect.find('option[value="' + categories[i].value + '"]').text(categories[i].text)
+      }
+    }
+
+    LiveSearch.prototype.updateFilters = function updateFilters (selector, html) {
+      $(selector)[0].outerHTML = html;
+      var $optionSelects = $(selector).find('[data-module="dm-option-select"]')
+      for (var i = 0; i < $optionSelects.length; i++) {
+        new DMGOVUKFrontend.OptionSelect($optionSelects[i]).init()
       }
     }
   

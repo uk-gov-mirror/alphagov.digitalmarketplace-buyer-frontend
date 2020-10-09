@@ -196,7 +196,7 @@ def build_lots_and_categories_selects(
     selected_filters = list()
     selected_filters.append(
         {
-            'text': '',
+            'text': 'All categories',
             'value': '', 
             'attributes': {
                 'data-link': search_link_builder(_build_base_url_args(preserved_request_args, content_manifest, framework, None))

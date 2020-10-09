@@ -292,18 +292,6 @@ def list_opportunities(framework_family):
     lots = [lot for lot in framework['lots'] if lot['allowsBrief']]
 
     view_name = 'list_opportunities'
-    selected_category_tree_filters = build_lots_and_categories_link_tree(
-        framework,
-        lots,
-        category_filter_group,
-        request,
-        updated_request_args if updated_request_args else clean_request_query_params,
-        content_manifest,
-        doc_type,
-        index,
-        Href(url_for('.{}'.format(view_name), framework_family=framework['framework'])),
-        search_api_client
-    )
 
     category_select = build_lots_and_categories_selects(
         framework,
@@ -318,9 +306,6 @@ def list_opportunities(framework_family):
         search_api_client
     )
 
-    filter_form_hidden_fields_by_name = {
-        f["name"]: f for f in selected_category_tree_filters[1:]
-    }
     current_lot = lots_by_slug.get(current_lot_slug)
 
     set_filter_states(filters.values(), request)
@@ -339,13 +324,11 @@ def list_opportunities(framework_family):
 
     template_args = dict(
         briefs=search_results_obj.search_results,
-        category_tree_root=selected_category_tree_filters[0],
         category_select=category_select,
         clear_filters_url=clear_filters_url,
         current_lot=current_lot,
         doc_type=doc_type,
         filters=filters.values(),
-        filter_form_hidden_fields=filter_form_hidden_fields_by_name.values(),
         form_action=url_for('.list_opportunities', framework_family=framework_family),
         framework=framework,
         framework_family=framework['framework'],
@@ -381,12 +364,12 @@ def list_opportunities(framework_family):
                 "selector": "#js-dm-live-search-summary-accessible-hint",
                 "html": render_template("search/_summary_accessible_hint.html", **template_args)
             },
-            "filter-title": {
-                "selector": "#js-dm-live-filter-title",
-                "html": render_template("search/_filter_title.html", **template_args)
-            },
             "categories": {
                 "select": category_select
+            },
+            "filters": {
+                "selector": "#js-dm-live-search-filters",
+                "html": render_template("search/_filters.html", **template_args)
             }
         }
 

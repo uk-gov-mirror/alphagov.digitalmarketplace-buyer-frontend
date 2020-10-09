@@ -1,5 +1,8 @@
 {% from "digitalmarketplace/components/option-select/macro.njk" import dmOptionSelect %}
-<div class="dm-filters">
+{% if not govukButton %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% endif %}
+<div class="dm-filters js-dm-live-search-fade" id="js-dm-live-search-filters">
   {% include "search/_filter_title.html" %}
   {% for filter in filters %}
     {{ dmOptionSelect({
