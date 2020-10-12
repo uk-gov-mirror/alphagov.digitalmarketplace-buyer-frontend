@@ -44,6 +44,10 @@
       @include bold-19;
     }
 
+    .govuk-list {
+      margin-top: 0px;
+    }
+
     .lot-filters--last-list {
       margin-left: $lot-filters__gutter / 2;
 
@@ -64,10 +68,6 @@
         display: inline-block;
         margin: ($lot-filters__gutter / 3) 0;
       }
-    }
-
-    a {
-      text-decoration: none;
     }
 
     .lot-filters__top-level-link {

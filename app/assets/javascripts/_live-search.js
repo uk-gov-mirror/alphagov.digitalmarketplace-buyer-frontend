@@ -172,11 +172,22 @@ endpoint response (application/json):
       // The !(state === "") is required for browser versions which trigger the popstate event on first pageload
       if(state == $.param(this.state) && !(state === "")) {
         for (var blockToReplace in response) {
-          this.replaceBlock(response[blockToReplace]['selector'], response[blockToReplace]['html']);
+          if (blockToReplace === 'categories') {
+            // We need to re-initialise the expander around the categories list
+            this.replaceCategories(response[blockToReplace]['selector'], response[blockToReplace]['html']);
+          } else {
+            this.replaceBlock(response[blockToReplace]['selector'], response[blockToReplace]['html']);
+          }
         }
   
         $('div[class=js-dm-live-search-fade]').css('opacity', '1')
       }
+    }
+
+    LiveSearch.prototype.replaceCategories = function replaceCategories(selector, html) {
+      $(selector)[0].outerHTML = html;
+      var $categoryExpander = $(selector).find('[data-module="dm-expander"]')
+      new DMGOVUKFrontend.Expander($categoryExpander[0]).init()
     }
   
     LiveSearch.prototype.replaceBlock = function replaceBlock(selector, html) {
@@ -221,6 +232,7 @@ endpoint response (application/json):
   
     GOVUK = GOVUK || {};
     GOVUK.GDM = GOVUK.GDM || {};
+    DMGOVUKFrontend = DMGOVUKFrontend || {};
     GOVUK.GDM.LiveSearch = LiveSearch;
   
     // Instantiate an option select for each one found on the page
