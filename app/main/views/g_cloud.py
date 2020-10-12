@@ -44,6 +44,7 @@ from ..helpers.search_save_helpers import get_saved_search_banner_message_status
 from ..helpers.shared_helpers import get_fields_from_manifest, get_questions_from_manifest_by_id
 from ...main import main, direct_award, direct_award_public
 from ..presenters.search_presenters import (
+    build_lots_and_categories_selects,
     filters_for_lot,
     set_filter_states,
     build_lots_and_categories_link_tree,
@@ -311,6 +312,19 @@ def search_services():
         search_api_client
     )
 
+    category_select = build_lots_and_categories_selects(
+        framework,
+        lots,
+        category_filter_group,
+        request,
+        clean_request_query_params,
+        content_manifest,
+        doc_type,
+        framework['slug'],
+        Href(url_for('.{}'.format(view_name), framework_family=framework['framework'])),
+        search_api_client
+    )
+
     filter_form_hidden_fields_by_name = {
         # Filter form should also filter by lot, and by category, when any of those are selected.
         # (If a sub-category is selected, we also need the parent category id, so that the correct part
@@ -336,6 +350,8 @@ def search_services():
 
     template_args = dict(
         category_tree_root=selected_category_tree_filters[0],
+        category_select=category_select,
+        test=category_filter_group,
         clear_filters_url=clear_filters_url,
         current_lot=current_lot,
         doc_type=doc_type,
@@ -365,10 +381,6 @@ def search_services():
                 "selector": "#js-dm-live-search-results",
                 "html": render_template("search/_results_wrapper.html", **template_args)
             },
-            "categories": {
-                "selector": "#js-dm-live-search-categories",
-                "html": render_template("search/_categories_wrapper.html", **template_args)
-            },
             "summary": {
                 "selector": "#js-dm-live-search-summary",
                 "html": render_template("search/_summary.html", **template_args)
@@ -385,6 +397,14 @@ def search_services():
                 "selector": "#js-dm-live-filter-title",
                 "html": render_template("search/_filter_title.html", **template_args)
             },
+            "categories": {
+                "selector": "#js-dm-live-search-categories",
+                "html": render_template("search/_categories_wrapper.html", **template_args)
+            },
+            "filters": {
+                "selector": "#js-dm-live-search-filters",
+                "html": render_template("search/_filters.html", **template_args)
+            }
         }
 
         return jsonify(live_results_dict)

@@ -107,6 +107,7 @@ endpoint response (application/json):
     LiveSearch.prototype.formChange = function formChange(e){
       var pageUpdated;
       if(this.isNewState()){
+        this.getTaxonomySelect().update()
         this.saveState();
         pageUpdated = this.updateResults();
         pageUpdated.done(
@@ -128,6 +129,15 @@ endpoint response (application/json):
         this.resultsCache[slug] = data;
       }
     };
+
+    LiveSearch.prototype.getTaxonomySelect = function getTaxonomySelect() {
+      var $taxonSelect = $('[data-module="dm-taxonomy-select"]')
+      if (!this.taxonomySelect) {
+        this.taxonomySelect = new DMGOVUKFrontend.TaxonomySelect($taxonSelect[0])
+        this.taxonomySelect.init()
+      }
+      return this.taxonomySelect
+    }
   
     LiveSearch.prototype.isNewState = function isNewState(){
       return $.param(this.state) !== this.$form.serialize();
@@ -178,7 +188,7 @@ endpoint response (application/json):
       if(state == $.param(this.state) && !(state === "")) {
         for (var blockToReplace in response) {
           if (blockToReplace === 'categories') {
-            this.updateCategories(response[blockToReplace]['select'])
+            this.updateCategories(response[blockToReplace]['selector'], response[blockToReplace]['html'])
           } else if (blockToReplace === 'filters') {
             this.updateFilters(response[blockToReplace]['selector'], response[blockToReplace]['html'])
           } else {
@@ -190,9 +200,11 @@ endpoint response (application/json):
       }
     }
 
-    LiveSearch.prototype.updateCategories = function updateCategories (categories) {
-      for (var i = 0; i < categories.length; i++) {
-        this.$taxonomySelect.find('option[value="' + categories[i].value + '"]').text(categories[i].text)
+    LiveSearch.prototype.updateCategories = function updateCategories (selector, html) {
+      $(selector)[0].outerHTML = html;
+      var $taxonSelects = $(selector).find('[data-module="dm-taxonomy-select"]')
+      for (var i = 0; i < $taxonSelects.length; i++) {
+        new DMGOVUKFrontend.TaxonomySelect($taxonSelects[i]).init()
       }
     }
 

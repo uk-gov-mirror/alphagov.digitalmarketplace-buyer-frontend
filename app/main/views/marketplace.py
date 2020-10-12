@@ -41,8 +41,7 @@ from ...main import main
 from ..presenters.search_presenters import (
     build_lots_and_categories_selects,
     filters_for_lot,
-    set_filter_states,
-    build_lots_and_categories_link_tree
+    set_filter_states
 )
 from ..presenters.search_results import SearchResults
 from ..presenters.search_summary import SearchSummary
@@ -365,7 +364,8 @@ def list_opportunities(framework_family):
                 "html": render_template("search/_summary_accessible_hint.html", **template_args)
             },
             "categories": {
-                "select": category_select
+                "selector": "#js-dm-live-search-categories",
+                "html": render_template("search/_categories_wrapper.html", **template_args)
             },
             "filters": {
                 "selector": "#js-dm-live-search-filters",

@@ -192,17 +192,25 @@ def build_lots_and_categories_selects(
     preserved_request_args = MultiDict(
         (k, v) for (k, v) in request.args.items(multi=True) if k not in keys_to_remove
     )
+    request_filters = get_filters_from_request(request.args)
 
     selected_filters = list()
-    selected_filters.append(
+    level1 = list()
+    level2 = list()
+    level3 = list()
+    level1.append(
         {
             'text': 'All categories',
-            'value': '', 
+            'value': '',
             'attributes': {
-                'data-link': search_link_builder(_build_base_url_args(preserved_request_args, content_manifest, framework, None))
+                'data-link': search_link_builder(
+                    _build_base_url_args(preserved_request_args, content_manifest, framework, None)
+                )
             }
         }
     )
+    level2.append({ 'text': 'All categories', 'value': '' })
+    level3.append({ 'text': 'All categories', 'value': '' })
 
     aggregations_by_lot = {
         lot['slug']: _get_aggregations_for_lot_with_filters(
@@ -219,15 +227,32 @@ def build_lots_and_categories_selects(
         if lot_selected:
             lot_filter['selected'] = True
 
-        url_args_for_lot = _build_base_url_args(preserved_request_args, content_manifest, framework, lot['slug'])
-        url_args_for_lot = _update_base_url_args_for_lot_and_category(url_args_for_lot,
-                                                                        keys_to_remove,
-                                                                        lot_slug=lot['slug'])
-        lot_filter['attributes'] = {
-            'data-link': search_link_builder(url_args_for_lot)
-        }
+        level1.append(lot_filter)
 
-        selected_filters.append(lot_filter)
+        categories = category_filter_group['filters'] if category_filter_group else []
+        if categories:
+            for category in categories:
+                category_filter = {
+                    'text': category['label'] + " (" + str(category['service_count']) + ")",
+                    'value': category['value'],
+                    'attributes': {
+                        'data-parent': lot_filter['value']
+                    }
+                }
+                param_values = request_filters.getlist(
+                    category['name'],
+                    type=str
+                )
+                if len(param_values) > 0:
+                    category_filter['selected'] = (
+                        category_filter['value'] in param_values
+                    )
+
+                level2.append(category_filter)
+
+    selected_filters.append(level1)
+    selected_filters.append(level2)
+    selected_filters.append(level3)
 
     return selected_filters
 

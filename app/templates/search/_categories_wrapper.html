@@ -59,14 +59,19 @@
         "id": "lot",
         "name": "lot",
         "label": "Category",
-        "items": category_select
-      }
+        "items": category_select[0]
+      },
+      "level_2_items": {
+        "id": "serviceCategories",
+        "name": "serviceCategories",
+        "label": "Category",
+        "items": category_select[1]
+      } if services and category_select[1]
     })}}
     {% if services %}
+      {{ test }}
+      {{category_select[1]}}
       {{ category_list([category_tree_root]) }}
-      {% for f in filter_form_hidden_fields %}
-        <input type="hidden" name="{{ f.name }}" value="{{ f.value }}" />
-      {% endfor %}
     {% endif %}
   </div>
 </div>
