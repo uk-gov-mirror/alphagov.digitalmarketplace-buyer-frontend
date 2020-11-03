@@ -6,6 +6,7 @@ from html import escape as html_escape
 from lxml import html
 import mock
 import pytest
+from flask import url_for, Markup
 from werkzeug.exceptions import BadRequest, NotFound
 
 from dmapiclient import HTTPError
@@ -13,6 +14,7 @@ from dmcontent.content_loader import ContentLoader, ContentNotFoundError
 from dmtestutils.api_model_stubs import FrameworkStub
 
 from app import content_loader
+from app.main.helpers.search_save_helpers import SavedSearchStateEnum
 from app.main.views.g_cloud import (DownloadResultsView, END_SEARCH_LIMIT, TOO_MANY_RESULTS_MESSAGE,
                                     CONFIRM_START_ASSESSING_MESSAGE, )
 from ...helpers import BaseApplicationTest, BaseAPIClientMixin
@@ -658,6 +660,144 @@ class TestDirectAwardProjectOverview(TestDirectAwardBase):
         assert len(doc.xpath(
             '(//li[contains(@class, "instruction-list-item")])[2]/p[contains(normalize-space(),'
             ' "You have too many services to assess.")]')) == 1
+
+
+@pytest.mark.slow
+@pytest.mark.usefixtures("live_server")
+class TestBrowserSnapshotTaskList:
+
+    # we need to do this rather than subclassing
+    # because pytest-flask expects an app fixture
+    # with session scope
+    @pytest.fixture(scope="session")
+    def template_test_app(self):
+        base = BaseApplicationTest()
+        base.setup_method(None)
+
+        import multiprocessing
+        from flask import render_template
+
+        with multiprocessing.Manager() as manager:
+            render_template_shared = manager.dict()
+            base.render_template_shared = render_template_shared
+
+            @base.app.route("/test-template")
+            def test_template():
+                args = render_template_shared.copy()
+                return render_template(args["template"], **args["context"])
+
+            yield base
+
+            base.teardown_method(None)
+
+    @pytest.fixture(scope="session")
+    def app(self, template_test_app):
+        return template_test_app.app
+
+    @pytest.fixture
+    def render_template(self, template_test_app):
+        def func(template, _context_dict=None, **context):
+            if _context_dict is None:
+                _context_dict = {}
+            template_test_app.render_template_shared.update(
+                {
+                    "template": template,
+                    "context": {**_context_dict, **context},
+                }
+            )
+            return url_for("test_template", _external=True)
+
+        return func
+
+    @pytest.fixture
+    def view_project(self, template_test_app):
+        return dict(
+            framework={
+                "name": "G-Cloud 12",
+                "family": "g-cloud",
+                "frameworkExpiresAtUTC": "2525-07-01T12:00:00.00Z",
+            },
+            following_framework={
+                "name": "G-Cloud 13",
+                "frameworkLiveAtUTC": "2525-01-01T12:00:00.00Z",
+            },
+            project=template_test_app._get_direct_award_project_fixture()["project"],
+            can_end_search=True,
+            search=None,
+            buyer_search_page_url="#",
+            search_summary_sentence=Markup('<span class="app-search-summary__count">1</span> results found containing <strong>testing</strong>'),
+            framework_urls={"customer_benefits_record_form_url": "#"},
+            project_outcome_label=None,
+            banner_message_status=None,
+        )
+
+    def test_starting_search(self, browser, snapshot_browser_screenshot):
+        browser.visit(url_for("main.index_g_cloud", _external=True))
+        assert browser.is_text_present("Start a new search")
+        assert browser == snapshot_browser_screenshot
+
+    def test_saved_search(
+        self, view_project, browser, render_template, snapshot_browser_screenshot
+    ):
+        browser.visit(render_template("direct-award/view-project.html", view_project))
+        assert browser.is_text_present("Edit your search and view results")
+        assert browser == snapshot_browser_screenshot
+
+    @pytest.mark.parametrize(
+        "banner_message_status", [state for state in SavedSearchStateEnum]
+    )
+    def test_saved_search_with_banner(
+        self,
+        banner_message_status,
+        view_project,
+        browser,
+        render_template,
+        snapshot_browser_screenshot,
+    ):
+        view_project["banner_message_status"] = banner_message_status.value
+        browser.visit(render_template("direct-award/view-project.html", view_project))
+        assert browser.is_element_present_by_css(".dm-banner")
+        assert browser == snapshot_browser_screenshot
+
+    def test_too_many_services_to_assess(
+        self, view_project, browser, render_template, snapshot_browser_screenshot
+    ):
+        view_project["can_end_search"] = False
+        browser.visit(render_template("direct-award/view-project.html", view_project))
+        assert browser.is_text_present("You have too many services to assess")
+        assert browser == snapshot_browser_screenshot
+
+    def test_ready_to_assess_services(
+        self, view_project, browser, render_template, snapshot_browser_screenshot
+    ):
+        view_project["search"] = {"searchedAt": "2020-01-01T08:32:00"}
+        browser.visit(render_template("direct-award/view-project.html", view_project))
+        assert browser.is_text_present(
+            "Confirm you have read and understood how to assess services"
+        )
+        assert browser == snapshot_browser_screenshot
+
+    def test_tell_us_the_outcome(
+        self, view_project, browser, render_template, snapshot_browser_screenshot
+    ):
+        view_project["search"] = {"searchedAt": "2020-01-01T08:32:00"}
+        view_project["project"]["readyToAssessAt"] = "2020-01-02T10:15:00"
+        browser.visit(render_template("direct-award/view-project.html", view_project))
+        assert browser.is_text_present("Tell us the outcome")
+        assert browser == snapshot_browser_screenshot
+
+    def test_outcome(
+        self, view_project, browser, render_template, snapshot_browser_screenshot
+    ):
+        view_project["search"] = {"searchedAt": "2020-01-01T08:32:00"}
+        view_project["project"]["readyToAssessAt"] = "2020-01-02T10:15:00"
+        view_project["project"]["outcome"] = "awarded"
+        view_project[
+            "project_outcome_label"
+        ] = "Contract awarded to Hide and Seek Ninjas: Tea Drinker"
+        browser.visit(render_template("direct-award/view-project.html", view_project))
+        assert browser.is_text_present("Contract awarded")
+        assert browser == snapshot_browser_screenshot
 
 
 class TestDirectAwardURLGeneration(BaseApplicationTest):
