@@ -15,11 +15,10 @@ $govuk-global-styles: true;
 @import "_atoz_navigation.scss";
 @import "_brief_page.scss";
 @import "_gcloud_browse_list.scss";
-@import "_index-page.scss";
+@import "_masthead.scss";
 @import "_search-page.scss";
 @import "_search-summary.scss";
 @import "_service-page.scss";
-@import "_table.scss";
 
 // Overrides
 @import "overrides/_text-input.scss";

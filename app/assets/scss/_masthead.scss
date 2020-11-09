@@ -1,0 +1,17 @@
+/**
+ * The masthead is the "hero" panel we can display on index pages.
+ */
+.app-masthead {
+
+  background-color: govuk-colour("blue");
+  width: 100%;
+  margin: -10px 0 0;
+  padding: 20px 0 20px;
+  color: white;
+
+  h1 {
+    @include govuk-width-container;
+    @include govuk-font(48, $weight: bold);
+  }
+
+}
