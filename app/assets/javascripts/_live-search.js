@@ -50,7 +50,7 @@ endpoint response (application/json):
       this.previousState = false;
       this.resultsCache = {};
   
-      if(GOVUK.GDM.support.history()) {
+      if(window.history && window.history.pushState && window.history.replaceState) {
         this.originalState = this.$form.serializeArray();
         this.saveState();
         this.$form.on('change', 'input[type=checkbox], input[type=search], input[type=radio]', this.formChange.bind(this));
