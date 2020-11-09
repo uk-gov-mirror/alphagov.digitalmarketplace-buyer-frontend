@@ -14,22 +14,22 @@ table.content-table {
   }
 
   caption {
-    @include bold-24;
+    @include govuk-font(24, $weight: bold);
     margin: 0.4em 0.5em 0.4em 0.7em;
     text-align: left;
   }
 
   th, td {
-    @include core-16($tabular-numbers: true);
+    @include govuk-font(16);
     vertical-align: top;
     padding: .75em .5em .75em 0;
   }
 
   td {
-    border-bottom: solid 1px $border-colour;
+    border-bottom: solid 1px $govuk-border-colour;
 
     small {
-      @include core-16;
+      @include govuk-font(16);
     }
   }
 
@@ -37,7 +37,7 @@ table.content-table {
     line-height: 1.25em;
     text-align: left;
     font-weight: 700;
-    border-bottom: solid 1px $border-colour;
+    border-bottom: solid 1px $govuk-border-colour;
   }
 
 }
