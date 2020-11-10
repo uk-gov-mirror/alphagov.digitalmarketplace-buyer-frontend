@@ -1,94 +1,60 @@
-#search-page-heading .page-heading {
-  margin-bottom: 10px;
+.js-hidden {
+  display: none;
+  visibility: hidden;
 }
 
-.search-page-filters {
+/**
+ * Lot/category filter list
+ */
+.app-lot-filter {
 
-  $lot-filters__gutter: 24px;
+  a {
+    text-decoration: none;
+  }
 
-  .lot-filters {
+  li[aria-current] strong {
+    display: inline-block;
+    margin-top: govuk-spacing(2);
+  }
 
-    @include govuk-font(16);
-    @include govuk-responsive-margin(6, "bottom");
-
-    h2 {
-      @include govuk-font(19, $weight: bold)
+  &__top-level-link {
+    &::before {
+      content: "\2039"; /* left-pointing chevron */
+      padding-right: govuk-spacing(1);
+      font-size: 1.333em;
     }
+  }
 
-    .lot-filters--last-list {
-      margin-left: $lot-filters__gutter / 2;
+  &__last-list {
 
-      li[aria-current] strong {
-        margin: 0;
-      }
-    }
-
-    /* if there's no <strong> tag before the deepest list, we need some top spacing */
-    a ~ .lot-filters--last-list {
-      margin-top: $lot-filters__gutter / 2;
-    }
-
-    li {
-      margin-top: $lot-filters__gutter / 8;
-
-      &[aria-current] strong {
-        display: inline-block;
-        margin: ($lot-filters__gutter / 3) 0;
-      }
-    }
-
-    a {
-      text-decoration: none;
-    }
-
-    .lot-filters__top-level-link {
-      padding-left: $lot-filters__gutter / 2;
+    li[aria-current] strong {
       display: inline-block;
-      position: relative;
-
-      &:before {
-        position: absolute;
-        left: 0;
-        top: 0;
-        line-height: .70;
-        content: "\2039"; /* left-pointing chevron */
-        font-size: 1.333em;
-
-        @include govuk-media-query($from: tablet) {
-          line-height: .85;
-        }
-      }
+      margin-top: 0;
     }
+
+    margin-top: govuk-spacing(3);
+    margin-left: govuk-spacing(3);
   }
 
-  .dm-filters {
+}
 
-    .dm-filter-title {
-      margin-bottom: 10px;
+/**
+ * Other filters
+ */
+.app-filters {
+  .app-filter-title {
 
-      .apply-filters-title {
-        display: inline-block;
-      }
+    .apply-filters-title {
+      display: inline-block;
+    }
 
-      .clear-filters-link {
-        float: right;
-        font-size: 16px;
-      }
-
+    .clear-filters-link {
+      float: right;
+      font-size: 16px;
     }
 
   }
-}
 
-.search-page-filters {
-  padding-bottom: 15px;
-}
-
-.search-result-important-metadata {
-  li {
-    @include govuk-font(16, $weight: bold);
-    color: $govuk-text-colour;
-  }
 }
 
 /**
@@ -113,6 +79,7 @@
 */
 .app-search-result__metadata {
   @include govuk-font(14);
+  margin-bottom: govuk-spacing(0);
 }
 
 /**

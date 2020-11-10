@@ -51,6 +51,7 @@ endpoint response (application/json):
       this.resultsCache = {};
   
       if(window.history && window.history.pushState && window.history.replaceState) {
+        this.$form.find('button.js-dm-live-search').addClass('js-hidden');
         this.originalState = this.$form.serializeArray();
         this.saveState();
         this.$form.on('change', 'input[type=checkbox], input[type=search], input[type=radio]', this.formChange.bind(this));
@@ -72,7 +73,7 @@ endpoint response (application/json):
           }.bind(this)
         );
       } else {
-        this.$form.find('button.button-save.js-dm-live-search').removeClass('js-hidden');
+        this.$form.find('button.js-dm-live-search').removeClass('js-hidden');
       }
     }
   
