@@ -6,6 +6,7 @@ from flask_wtf.csrf import CSRFProtect, CSRFError
 from werkzeug.local import Local, LocalProxy
 
 import dmapiclient
+import dmcontent.govuk_frontend
 from dmutils import init_app
 from dmcontent.content_loader import ContentLoader
 from dmcontent.utils import try_load_manifest, try_load_metadata, try_load_messages
@@ -110,6 +111,10 @@ def create_app(config_name):
     login_manager.login_message = None  # don't flash message to user
     gds_metrics.init_app(application)
     csrf.init_app(application)
+
+    application.jinja_env.globals["render_question"] = (
+        dmcontent.govuk_frontend.render_question
+    )
 
     @application.before_request
     def remove_trailing_slash():

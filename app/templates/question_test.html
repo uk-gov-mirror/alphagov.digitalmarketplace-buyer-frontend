@@ -1,0 +1,51 @@
+
+{% extends "_base_page.html" %}
+{% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/label/macro.njk" import govukLabel %}
+
+
+{% block pageTitle %}
+  Question Mockup - Digital Marketplace
+{% endblock %}
+
+{% block breadcrumb %}
+{{ govukBreadcrumbs({
+  "items": [
+    {
+      "href": "http://localhost",
+      "text": "Digital Marketplace"
+    }
+  ]
+}) }}
+{% endblock breadcrumb %}
+
+{% block mainContent %}
+  <form method="post" enctype="multipart/form-data" class="supplier-declaration" action="#" {# remove any fragment identifier as validation messages are at the top #}>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            <h1 class="govuk-heading-l">{{ section.name }}</h1>
+
+            {% if section.description %}
+            <div class="section-description">
+                {{ section.description}}
+              </div>
+            {% endif %}
+            {{
+                render_question(question, {}, {})
+            }}
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+            {{ govukButton({
+              "text": "Save and return to declaration overview",
+              "name": "save_and_return_to_overview",
+              "value": "1"
+            }) }}
+
+          </div>
+      </div>
+  </form>
+{% endblock %}

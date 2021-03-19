@@ -24,4 +24,5 @@ from .views import (
     g_cloud,
     marketplace,
     suppliers,
+    question,
 )
